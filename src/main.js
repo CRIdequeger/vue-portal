@@ -16,17 +16,12 @@ import store from './store';
 import Mock from './mock';
 import * as filters from './filters';
 
-/* 引入 echarts */
-import ECharts from 'vue-echarts';
-
 import './assets/css/base.css';
 
 
 Vue.config.productionTip = false;
 Vue.use(Element);
 Vue.use(Vuex);
-Vue.component('v-chart', ECharts);
-
 
 /* 开启Mock.js */
 // Mock.bootstrap();
