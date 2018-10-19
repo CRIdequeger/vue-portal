@@ -82,9 +82,8 @@ export default {
     getCurrency() {
       return new Promise(async (resolve, reject) => {
         try {
-          const res = await CurrencyService.getCurrency(this.query);
-          let {currency, currencyDate} = res.data;
-          resolve([currencyDate, currency[2].data])
+          const { data: { currency } } = await CurrencyService.getCurrency(this.query);
+          resolve([currency[2].date, currency[2].data])
         } catch (e) {
           reject(e)
         }

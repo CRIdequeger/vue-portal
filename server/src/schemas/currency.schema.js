@@ -12,7 +12,7 @@ var CurrencySchema = new mongoose.Schema({
 	timestamp: String,
 	date: String,
 	cid: String,
-})
+});
 
 //查询的静态方法
 CurrencySchema.statics = {
