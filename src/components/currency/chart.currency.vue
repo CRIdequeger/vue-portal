@@ -2,9 +2,9 @@
   <div class="chart-currency">
     <el-row :gutter="20">
       <el-col :sm="6" :md="4">
-        <el-form ref="CNYChartQueryForm" :model="query" label-width="80px" label-position="top" size="mini">
+        <el-form ref="CNYChartQueryForm" :model="query" :rules="rules" label-width="80px" label-position="top" size="mini">
           <h3>筛选</h3>
-          <el-form-item label="币值范围">
+          <el-form-item label="汇率范围 (单位: CNY)" prop="price">
             <el-row>
               <el-col :span="11">
                 <el-input v-model="query.price_start" type="number" min="0.0" step="0.1"></el-input>
@@ -15,10 +15,10 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="开始时间" prop="date_start">
+          <el-form-item label="开始时间" prop="date">
             <el-date-picker type="date" placeholder="选择日期" v-model="query.date_start" class="block"></el-date-picker>
           </el-form-item>
-          <el-form-item label="结束时间" prop="date_end">
+          <el-form-item label="结束时间" prop="date">
             <el-date-picker type="date" placeholder="选择日期" v-model="query.date_end" class="block"></el-date-picker>
           </el-form-item>
           <el-form-item>
@@ -42,6 +42,25 @@ import * as CurrencyService from '../../service/currency.service';
 export default {
   name: 'chartCurrency',
   data() {
+    const priceValidator = ( rule, value, callback ) => {
+      const start = this.query.price_start;
+      const end = this.query.price_end;
+      if((start !== 0 || end !== 0) && start > end) {
+        callback(new Error('币值过滤范围开始应低于结束'));
+        console.log(rule, value)
+      } else {
+        callback();
+      }
+    };
+    const dateValidator = ( rule, value, callback ) => {
+      const start = this.query.date_start;
+      const end = this.query.date_end;
+      if(start !== '' && end !== '' && start > end) {
+        callback(new Error('时间过滤范围有误'));
+      } else {
+        callback();
+      }
+    };
     return {
       CNYChartsInstance: null,
       query: {
@@ -49,6 +68,14 @@ export default {
         price_end: 0,
         date_start: '',
         date_end: ''
+      },
+      rules: {
+        price: [
+          { validator: priceValidator, trigger: 'blur' }
+        ],
+        date: [
+          { validator: dateValidator, trigger: 'blur' }
+        ],
       },
       currencyCNYChartOpt: {
           title: {
@@ -76,6 +103,7 @@ export default {
   },
   methods: {
     filter: async function () {
+      console.log(this.$refs['CNYChartQueryForm'].validate())
       this.currencyCNYChartOpt = this.generateCNYChartOpt(...await this.getCurrency());
       this.CNYChartsInstance.setOption(this.currencyCNYChartOpt);
     },
@@ -121,6 +149,18 @@ export default {
     },
   },
 };
+
+/*js 防抖的实现*/
+const debounce = (fn, wait) => {
+  let timeout = null;
+  return () => {
+    if(timeout !== null) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(fn, wait)
+  }
+}
+
 </script>
 
 <style scoped lang="sass">

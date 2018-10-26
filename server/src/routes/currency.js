@@ -19,8 +19,15 @@ const getCurrency = async (req, res) => {
 	}
   if (params.date_start !== '' || params.date_end !== '') {
     query.timestamp = {};
-    if (params.date_start !== '') query.timestamp.$gte = params.date_start;
-    if (params.date_end !== '') query.timestamp.$lte = params.date_end;
+
+    if (params.date_start !== '') {
+      let start_date = new Date(params.date_start);
+      query.timestamp.$gte = Date.UTC(start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+    }
+    if (params.date_end !== '') {
+      let end_date = new Date(params.date_end);
+      query.timestamp.$lte = Date.UTC(end_date.getFullYear(), end_date.getMonth(), end_date.getDate()) * 1 + 86400000 + '';
+    }
   };
 	console.log(query);
   const currencyType = [
