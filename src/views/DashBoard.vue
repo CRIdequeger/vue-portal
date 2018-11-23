@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <el-card class="box-card">
-          <user-list :userList="userList" @reload="getUserList()"></user-list>
+          <user-list :data="userList" @reload="getUserList"></user-list>
         </el-card>
       </el-col>
     </el-row>
@@ -34,11 +34,18 @@ export default {
     currencyChart: CurrencyChart
   },
   mounted() {
-    this.getUserList();
   },
   methods: {
-    getUserList() {
-      UserService.getUserList()
+    getUserList(pager) {
+      let { pageSize, pageNumber } = pager;
+      UserService.getUserList({
+        user: {
+          email: '',
+          name: ''
+        },
+        pageSize,
+        pageNumber
+      })
         .then((res) => {
           this.userList = res.data;
           console.log(this.userList);

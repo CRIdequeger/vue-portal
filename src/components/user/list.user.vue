@@ -1,4 +1,5 @@
 <template>
+  <div>
     <div class="user-list">
       <el-row class="caption">
         <el-col :span="12">用户列表</el-col>
@@ -8,10 +9,10 @@
         </el-col>
       </el-row>
       <el-table
-        :data="userList"
+        :data="data.userList"
         border
         style="width: 100%"
-        ref="userList"
+        ref="data.userList"
         @selection-change="handleSelectionChange"
       >
         <el-table-column
@@ -41,47 +42,97 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        background
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :page-sizes="pageSizes"
+        :page-size="pageSize"
+        layout="prev, pager, next"
+        :total="total">
+      </el-pagination>
     </div>
+  </div>
 </template>
 
 <script>
-import * as UserService from '../../service/user.service';
+  import * as UserService from '../../service/user.service';
+  import pagerMixins from '../../mixins/pager.mixins';
 
-export default {
-  name: 'UserList',
-  props: ['userList'],
-  data() {
-    return {
-      selectedRow: [],
-    };
-  },
-  methods: {
-    handleSelectionChange(val) {
-      this.selectedRow = val;
+  export default {
+    mixins: [pagerMixins],
+    name: 'UserList',
+    props: ['data'],
+    data() {
+      return {
+        selectedRow: [],
+      };
     },
-    updateUser() {
-      this.$router.push({ path: `/user/${this.selectedRow[0]._id}/update`});
+    created() {
+      this.updateUserList();
     },
-    deleteUser() {
-      UserService.deleteUser(this.selectedRow)
-        .then((res) => {
-          if (res.data.success) {
-            console.log('暴露接口,外部实现');
-            this.$emit('reload');
-          } else {
-            console.log(res.data.message);
-          }
+    beforeUpdate() {
+      this.pageSize = this.data.pageSize;
+      this.pageNumber = this.data.pageNumber;
+      this.total = this.data.total;
+    },
+    mounted() {
+      this.handleRowClick();
+    },
+    methods: {
+      handleRowClick() {
+        const box = document.getElementsByClassName('user-list');
+        for (let i = 0; i < box.length; i++) {
+          const row = box[i].childNodes('tr');
+          (function (i) {
+            box[i].addEventListener('click', () => {
+              console.log(this)
+            });
+          })(i)
+        }
+      },
+      handleSizeChange(val) {
+        this.pageSize = val;
+        this.updateUserList()
+      },
+      handleCurrentChange(val) {
+        this.pageNumber = val;
+        this.updateUserList()
+      },
+      handleSelectionChange(val) {
+        this.selectedRow = val;
+      },
+      updateUserList() {
+        this.$emit('reload', {
+          pageSize: this.pageSize,
+          pageNumber: this.pageNumber
         })
-        .catch((e) => {
-          console.log(e);
-        });
+      },
+      updateUser() {
+        this.$router.push({ path: `/user/${this.selectedRow[0]._id}/update` });
+      },
+      deleteUser() {
+        UserService.deleteUser(this.selectedRow)
+          .then((res) => {
+            if (res.data.success) {
+              console.log('暴露接口,外部实现');
+              this.updateUserList()
+            } else {
+              console.log(res.data.message);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      },
     },
-  },
-};
+  };
 </script>
 
 <style scoped lang="sass">
   .action
     text-align: right
     margin-bottom: 1rem
+    .el-pagination
+      margin-top: 1rem
 </style>

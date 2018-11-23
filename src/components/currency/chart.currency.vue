@@ -47,7 +47,6 @@ export default {
       const end = this.query.price_end;
       if((start !== 0 || end !== 0) && start > end) {
         callback(new Error('币值过滤范围开始应低于结束'));
-        console.log(rule, value)
       } else {
         callback();
       }

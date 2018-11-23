@@ -4,32 +4,14 @@ import express from 'express'
 
 const router = express.Router();
 import Currency from '../modules/currency.model'
-import CurrencyDate from '../modules/currencyDate.model'
 
 const getCurrency = async (req, res) => {
 	/* 拼装数据成各币种的币值 */
   const params = req.query;
-  let query = {};
 	params.price_start *= 1;
 	params.price_end *= 1;
-	if (params.price_start !== 0 || params.price_end !== 0) {
-		query.value = {};
-		if (params.price_start !== 0) query.value.$gte = params.price_start;
-		if (params.price_end !== 0) query.value.$lte = params.price_end;
-	}
-  if (params.date_start !== '' || params.date_end !== '') {
-    query.timestamp = {};
+  let query = getQuery(params);
 
-    if (params.date_start !== '') {
-      let start_date = new Date(params.date_start);
-      query.timestamp.$gte = Date.UTC(start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
-    }
-    if (params.date_end !== '') {
-      let end_date = new Date(params.date_end);
-      query.timestamp.$lte = Date.UTC(end_date.getFullYear(), end_date.getMonth(), end_date.getDate()) * 1 + 86400000 + '';
-    }
-  };
-	console.log(query);
   const currencyType = [
     {
       en: 'USDGBP',
@@ -71,6 +53,29 @@ const getCurrency = async (req, res) => {
 	res.status(200).send({
 		currency
 	})
+};
+
+const getQuery = (params) => {
+  let query = {};
+  /* 币值范围过滤条件 */
+  if (params.price_start !== 0 || params.price_end !== 0) {
+    query.value = {};
+    if (params.price_start !== 0) query.value.$gte = params.price_start;
+    if (params.price_end !== 0) query.value.$lte = params.price_end;
+  }
+  /* 按日期过滤 */
+  if (params.date_start !== '' || params.date_end !== '') {
+    query.timestamp = {};
+    if (params.date_start !== '') {
+      let start_date = new Date(params.date_start);
+      query.timestamp.$gte = Date.UTC(start_date.getFullYear(), start_date.getMonth(), start_date.getDate());
+    }
+    if (params.date_end !== '') {
+      let end_date = new Date(params.date_end);
+      query.timestamp.$lte = Date.UTC(end_date.getFullYear(), end_date.getMonth(), end_date.getDate()) * 1 + 86400000 + '';
+    }
+  };
+  return query;
 };
 
 router.get('/', getCurrency);

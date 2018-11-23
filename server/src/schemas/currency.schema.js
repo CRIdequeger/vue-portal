@@ -3,7 +3,6 @@
  */
 
 import mongoose from 'mongoose';
-import User from "../modules/user";
 
 //声明一个mongoonse对象
 var CurrencySchema = new mongoose.Schema({
