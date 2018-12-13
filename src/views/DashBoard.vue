@@ -2,6 +2,11 @@
   <div class="dashboard">
     <el-row>
       <el-col :span="24">
+        <tree-grid></tree-grid>
+      </el-col>
+    </el-row>
+    <el-row>
+      <el-col :span="24">
         <el-card class="box-card">
           <user-list :data="userList" @reload="getUserList"></user-list>
         </el-card>
@@ -20,6 +25,7 @@
 <script>
 import * as UserService from '../service/user.service';
 import UserList from '../components/user/list.user';
+import TreeGrid from '../components/treeGrid/TreeGrid';
 import CurrencyChart from '../components/currency/chart.currency';
 
 export default {
@@ -31,7 +37,8 @@ export default {
   },
   components: {
     userList: UserList,
-    currencyChart: CurrencyChart
+    currencyChart: CurrencyChart,
+    treeGrid: TreeGrid
   },
   mounted() {
   },
