@@ -133,6 +133,6 @@
   .action
     text-align: right
     margin-bottom: 1rem
-    .el-pagination
-      margin-top: 1rem
+  .el-pagination
+    margin-top: 1rem
 </style>
