@@ -1,3 +1,8 @@
+.block {
+  width: 100%; }
 
+#context-menu .el-button .fa {
+  position: absolute;
+  left: 1rem; }
 
 /*# sourceMappingURL=base.css.map */
