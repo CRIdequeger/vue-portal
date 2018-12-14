@@ -15,10 +15,8 @@ npm install
 # 安装web server依赖, 编译, 启动
 1. cd server/
 2. npm install
-3. gulp dev
-4. nodemon --inspect ./dist/
  
 
-# 启动前端工程
+# 启动工程
 (项目根目录下)
-npm run dev
+npm start
