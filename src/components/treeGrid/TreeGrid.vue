@@ -47,7 +47,7 @@
               <el-col :span="12"><i class="fa fa-table"></i>人员信息列表</el-col>
               <el-col :span="12" class="action">
                 <el-button-group>
-                  <el-button type="primary" size="small" icon="el-icon-plus" @click="handleCreate">新增人员
+                  <el-button type="primary" size="small" icon="el-icon-plus" @click="handleCreatePerson">新增人员
                   </el-button>
                   <el-button type="primary" size="small" icon="el-icon-delete">删除人员</el-button>
                 </el-button-group>
@@ -90,11 +90,11 @@
                 <el-button-group>
                   <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
                     <el-button size="mini" type="primary" icon="fa fa-edit"
-                               @click="handleEdit(scope.$index, scope.row)"></el-button>
+                               @click="handleEditPerson(scope.$index, scope.row)"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="删除" placement="top-start">
                     <el-button size="mini" type="primary" icon="fa fa-trash-o"
-                               @click="handleDelete(scope.$index, scope.row)"></el-button>
+                               @click="handleDeletePerson(scope.$index, scope.row)"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="岗位管理" placement="top-start">
                     <el-button size="mini" type="primary" icon="fa fa-flag-o"
@@ -149,8 +149,8 @@
 
     <!-- 右键菜单 -->
     <context-menu id="context-menu" ref="ctxMenu">
-      <li v-for="item in contextMenuList">
-        <el-button :disabled="item.disable" size="medium" :icon="`fa ${item.icon}`" @click="handleContextMenuClick">
+      <li v-for="(item, index) in contextMenuList">
+        <el-button :disabled="item.disable" size="medium" :icon="`fa ${item.icon}`" @click="handleContextMenuClick(index)">
           {{item.text}}
         </el-button>
       </li>
@@ -253,6 +253,39 @@
         <el-button type="primary" @click="personInfoDialog.visible = false">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 部门信息弹出框 -->
+    <el-dialog
+      title="部门信息"
+      :visible.sync="groupInfoDialog.visible"
+      width="750px"
+      :open="beforePersonInfoDialogOpen">
+      <el-form :model="groupInfoForm" label-width="80px">
+        <el-form-item label="上级部门">
+          <el-input v-model="targetTreeNode.text" autocomplete="off" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="部门编码">
+          <el-input v-model="groupInfoForm.groupCode" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="业务类别">
+          <el-input v-model="groupInfoForm.groupType" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="部门名称">
+          <el-input v-model="groupInfoForm.groupName" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="部门地址">
+          <el-input v-model="groupInfoForm.groupAddress" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="部门简介">
+          <el-input type="textarea" v-model="groupInfoForm.groupDes" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="groupInfoDialog.visible = false">取 消</el-button>
+        <el-button type="primary" @click="groupInfoDialog.visible = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -393,13 +426,19 @@
           }
         ],
         contextMenuListDisableArr: [],
+        selectedRow: {},
+        targetTreeNode: {},
         personInfoDialog: {
           visible: false,
           action: ''
         },
-        selectedRow: {},
         personInfoForm: {},
-        personInfoTableQuery: {}
+        personInfoTableQuery: {},
+        groupInfoDialog: {
+          visible: false,
+          action: ''
+        },
+        groupInfoForm: {}
       };
     },
     components: {
@@ -420,28 +459,39 @@
           this.contextMenuListDisableArr = [0, 1, 2, 3];
           this.changeContextMenuBtnDisable(this.contextMenuListDisableArr, true);
         }
+        this.targetTreeNode = data;
         this.$refs.ctxMenu.open();
       },
-      handleContextMenuClick() {
-        console.log('hi')
+      handleContextMenuClick(index) {
+        switch (index) {
+          case 0:
+            this.showGroupInfoDialog('create');
+            break;
+        }
       },
       handleSelectionChange() {
 
       },
-      handleCreate() {
+      showGroupInfoDialog(action) {
+        this.groupInfoDialog = {
+          visible: true,
+          action
+        }
+      },
+      handleCreatePerson() {
         this.personInfoDialog = {
           visible: true,
           action: 'create'
         };
       },
-      handleEdit(rowIndex, row) {
+      handleEditPerson(rowIndex, row) {
         this.selectedRow = row;
         this.personInfoDialog = {
           visible: true,
           action: 'edit'
         };
       },
-      handleDelete(rowIndex, row) {
+      handleDeletePerson(rowIndex, row) {
       },
       handleQuatersManage(rowIndex, row) {
       },
