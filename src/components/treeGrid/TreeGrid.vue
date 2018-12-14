@@ -1,11 +1,32 @@
 <template>
   <div>
     <el-row :gutter="20">
+      <!-- 树 -->
       <el-col :span="8">
         <el-card shadow="hover">
-          <el-row class="caption">
-            <el-col><i class="fa fa-sitemap"></i>组织机构树</el-col>
-          </el-row>
+          <div class="clearfix" slot="header">
+            <el-row class="caption">
+              <el-col :span="8">
+                <i class="fa fa-sitemap"></i>组织机构树
+              </el-col>
+              <el-col :span="16" class="action">
+                <el-button-group>
+                  <el-tooltip class="item" effect="dark" content="创建根机构" placement="top-start">
+                    <el-button size="small" icon="el-icon-plus" circle></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="全部展开" placement="top-start">
+                    <el-button size="small" icon="el-icon-circle-plus-outline" circle></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="全部收起" placement="top-start">
+                    <el-button size="small" icon="el-icon-remove-outline" circle></el-button>
+                  </el-tooltip>
+                  <el-tooltip class="item" effect="dark" content="刷新" placement="top-start">
+                    <el-button size="small" icon="el-icon-refresh" circle></el-button>
+                  </el-tooltip>
+                </el-button-group>
+              </el-col>
+            </el-row>
+          </div>
           <el-tree :data="data" :props="defaultProps" icon-class="fa fa-plus" @node-click="handleNodeClick"
                    @node-contextmenu="showContextMenu">
             <span class="custom-tree-node" slot-scope="{node, data}">
@@ -18,20 +39,49 @@
           </el-tree>
         </el-card>
       </el-col>
+      <!-- 表 -->
       <el-col :span="16">
         <el-card shadow="hover">
-          <el-row class="caption">
-            <el-col :span="12"><i class="fa fa-table"></i>人员信息列表</el-col>
-            <el-col :span="12" class="action">
-              <el-button type="primary" size="small" icon-class="fa fa-plus" plain @click="handleCreate">新增人员
-              </el-button>
-              <el-button type="primary" size="small" icon-class="fa fa-trash" plain>删除人员</el-button>
+          <div class="clearfix" slot="header">
+            <el-row class="caption">
+              <el-col :span="12"><i class="fa fa-table"></i>人员信息列表</el-col>
+              <el-col :span="12" class="action">
+                <el-button-group>
+                  <el-button type="primary" size="small" icon="el-icon-plus" @click="handleCreate">新增人员
+                  </el-button>
+                  <el-button type="primary" size="small" icon="el-icon-delete">删除人员</el-button>
+                </el-button-group>
+              </el-col>
+            </el-row>
+          </div>
+          <!-- 条件查询 -->
+          <el-row :gutter="20" class="tableQuery">
+            <el-col :span="6">
+              <el-input size="small" v-model="personInfoTableQuery.personCode" autocomplete="off" placeholder="人员编码"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-input size="small" v-model="personInfoTableQuery.fullname" autocomplete="off" placeholder="姓名"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-input size="small" v-model="personInfoTableQuery.username" autocomplete="off" placeholder="用户名"></el-input>
+            </el-col>
+            <el-col :span="6">
+              <el-button-group>
+                <el-button type="primary" size="small">查询</el-button>
+                <el-button size="small">重置</el-button>
+              </el-button-group>
             </el-col>
           </el-row>
+          <!-- 表格主体 -->
           <el-table
             :data="tableData.rows"
             border
+            @selection-change="handleSelectionChange"
             style="width: 100%">
+            <el-table-column
+              type="selection"
+              width="55">
+            </el-table-column>
             <el-table-column
               label="操作"
               width="112"
@@ -88,10 +138,16 @@
               label="密级">
             </el-table-column>
           </el-table>
+          <el-pagination
+            background
+            layout="prev, pager, next"
+            :total="1000">
+          </el-pagination>
         </el-card>
       </el-col>
     </el-row>
 
+    <!-- 右键菜单 -->
     <context-menu id="context-menu" ref="ctxMenu">
       <li v-for="item in contextMenuList">
         <el-button :disabled="item.disable" size="medium" :icon="`fa ${item.icon}`" @click="handleContextMenuClick">
@@ -99,6 +155,8 @@
         </el-button>
       </li>
     </context-menu>
+
+    <!-- 人员信息弹出框 -->
     <el-dialog
       title="人员信息"
       :visible.sync="personInfoDialog.visible"
@@ -341,6 +399,7 @@
         },
         selectedRow: {},
         personInfoForm: {},
+        personInfoTableQuery: {}
       };
     },
     components: {
@@ -365,6 +424,9 @@
       },
       handleContextMenuClick() {
         console.log('hi')
+      },
+      handleSelectionChange() {
+
       },
       handleCreate() {
         this.personInfoDialog = {
@@ -417,7 +479,6 @@
   }
 
   .caption {
-    height: 48px;
     i {
       margin-right: 5px;
     }
@@ -428,5 +489,11 @@
   }
   .el-select {
     width: 100%
+  }
+  .el-pagination {
+    margin-top: 1rem;
+  }
+  .tableQuery {
+    margin-bottom: 1rem;
   }
 </style>
