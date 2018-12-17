@@ -5,18 +5,17 @@ import Group from '../modules/group.model';
 const router = express.Router();
 
 /* 获取list */
-router.get('/', (req, res) => {
+const getList = (req, res) => {
   const groupList = Group.find();
   res.status(200).send(groupList)
-});
+};
 
 /* 根据id返回 */
-router.get('/:id', (req, res) => {
-
-});
+const getOneById = (req, res) => {
+};
 
 /* 新增 */
-router.post('/', async (req, res) => {
+const create = async (req, res) => {
   const createGroup = req.body;
   let createResult;
   console.log(createGroup);
@@ -33,18 +32,25 @@ router.post('/', async (req, res) => {
       err
     })
   }
-});
+};
 
 /* 修改 */
-router.put('/', (req, res) => {
+const update = async (req, res) => {
   const updateGroup = req.body;
   console.log(req.params);
-  const updateResult = Group.findByIdAndUpdate(updateGroup._id, updateGroup);
+  const updateResult = await Group.findByIdAndUpdate(updateGroup._id, updateGroup);
   res.status(200).send(updateResult);
-});
+}
+
 
 /* 删除 */
-router.delete('/', (req, res) => {
+const deleteGroup = (req, res) => {
 
-});
+};
+
+router.get('/', getList);
+router.get('/:id', getOneById);
+router.post('/', create);
+router.put('/', update);
+router.delete('/', deleteGroup);
 

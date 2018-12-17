@@ -10,12 +10,13 @@ import register from './routes/register'
 import login from './routes/login'
 import test from './routes/test'
 import getUserList from './routes/userList'
+import group from './routes/group'
 import user from './routes/user'
 import currencyReptile from './task/currencyTask'
 import currency from './routes/currency'
 import connectDb from "./utils/connectDb";
 import jwtAuth from "./middleware/jwt";
-const app = express()
+const app = express();
 
 connectDb();
 // currencyReptile();
@@ -41,16 +42,16 @@ app.use(bodyParser.json());
 // 静态文件服务器
 app.use(express.static('public'));
 
-app.use(jwtAuth)
+app.use(jwtAuth);
 
 
-
-app.post('/register', register)
-app.post('/login', login)
-app.post('/getUserList', getUserList)
-app.use('/user', user)
-app.use('/currency', currency)
-app.use('/test', test)
+app.post('/register', register);
+app.post('/login', login);
+app.post('/getUserList', getUserList);
+app.use('/user', user);
+app.use('/currency', currency);
+app.use('/test', test);
+app.use('/group', group);
 
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'))
