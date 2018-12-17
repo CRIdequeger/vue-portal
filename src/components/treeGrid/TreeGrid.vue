@@ -12,7 +12,7 @@
               <el-col :span="16" class="action">
                 <el-button-group>
                   <el-tooltip class="item" effect="dark" content="创建根机构" placement="top-start">
-                    <el-button size="small" icon="el-icon-plus" circle></el-button>
+                    <el-button size="small" icon="el-icon-plus" circle @click="showGroupInfoDialog"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="全部展开" placement="top-start">
                     <el-button size="small" icon="el-icon-circle-plus-outline" circle></el-button>
@@ -47,7 +47,7 @@
               <el-col :span="12"><i class="fa fa-table"></i>人员信息列表</el-col>
               <el-col :span="12" class="action">
                 <el-button-group>
-                  <el-button type="primary" size="small" icon="el-icon-plus" @click="handleCreatePerson">新增人员
+                  <el-button type="primary" size="small" icon="el-icon-plus" @click="createPerson">新增人员
                   </el-button>
                   <el-button type="primary" size="small" icon="el-icon-delete">删除人员</el-button>
                 </el-button-group>
@@ -90,19 +90,19 @@
                 <el-button-group>
                   <el-tooltip class="item" effect="dark" content="编辑" placement="top-start">
                     <el-button size="mini" type="primary" icon="fa fa-edit"
-                               @click="handleEditPerson(scope.$index, scope.row)"></el-button>
+                               @click="editPerson(scope.$index, scope.row)"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="删除" placement="top-start">
                     <el-button size="mini" type="primary" icon="fa fa-trash-o"
-                               @click="handleDeletePerson(scope.$index, scope.row)"></el-button>
+                               @click="deletePerson(scope.$index, scope.row)"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="岗位管理" placement="top-start">
                     <el-button size="mini" type="primary" icon="fa fa-flag-o"
-                               @click="handleQuatersManage(scope.$index, scope.row)"></el-button>
+                               @click="quartersManage(scope.$index, scope.row)"></el-button>
                   </el-tooltip>
                   <el-tooltip class="item" effect="dark" content="账号分配" placement="top-start">
                     <el-button size="mini" type="primary" icon="fa fa-user-o"
-                               @click="handleAccount(scope.$index, scope.row)"></el-button>
+                               @click="accountManage(scope.$index, scope.row)"></el-button>
                   </el-tooltip>
                 </el-button-group>
 
@@ -260,9 +260,9 @@
       :visible.sync="groupInfoDialog.visible"
       width="750px"
       :open="beforePersonInfoDialogOpen">
-      <el-form :model="groupInfoForm" label-width="80px">
+      <el-form :model="groupInfoForm" label-width="80px" ref="groupInfoForm">
         <el-form-item label="上级部门">
-          <el-input v-model="targetTreeNode.text" autocomplete="off" disabled></el-input>
+          <el-input v-model="targetTreeNode.text || '无'" autocomplete="off" disabled></el-input>
         </el-form-item>
         <el-form-item label="部门编码">
           <el-input v-model="groupInfoForm.groupCode" autocomplete="off"></el-input>
@@ -281,8 +281,8 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="groupInfoDialog.visible = false">取 消</el-button>
-        <el-button type="primary" @click="groupInfoDialog.visible = false">确 定</el-button>
+        <el-button @click="closeGroupInfoDialog">取 消</el-button>
+        <el-button type="primary" @click="submitGroupInfoForm">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -478,29 +478,40 @@
           action
         }
       },
-      handleCreatePerson() {
+      submitGroupInfoForm() {
+
+      },
+      closeGroupInfoDialog() {
+        this.targetTreeNode = {};
+        this.resetForm('groupInfoForm');
+        this.groupInfoDialog.visible = false;
+      },
+      createPerson() {
         this.personInfoDialog = {
           visible: true,
           action: 'create'
         };
       },
-      handleEditPerson(rowIndex, row) {
+      editPerson(rowIndex, row) {
         this.selectedRow = row;
         this.personInfoDialog = {
           visible: true,
           action: 'edit'
         };
       },
-      handleDeletePerson(rowIndex, row) {
+      deletePerson(rowIndex, row) {
       },
-      handleQuatersManage(rowIndex, row) {
+      quartersManage(rowIndex, row) {
       },
-      handleAccount(rowIndex, row) {
+      accountManage(rowIndex, row) {
       },
       beforePersonInfoDialogOpen() {
         if(this.personInfoDialog.action === 'edit') {
 
         }
+      },
+      resetForm(formName) {
+        this.$refs[formName].resetFields();
       },
       changeContextMenuBtnDisable(nthList, value) {
         nthList.forEach((item) => {
