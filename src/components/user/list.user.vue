@@ -81,15 +81,6 @@
     },
     methods: {
       handleRowClick() {
-        const box = document.getElementsByClassName('user-list');
-        for (let i = 0; i < box.length; i++) {
-          const row = box[i].childNodes('tr');
-          (function (i) {
-            box[i].addEventListener('click', () => {
-              console.log(this)
-            });
-          })(i)
-        }
       },
       handleSizeChange(val) {
         this.pageSize = val;
