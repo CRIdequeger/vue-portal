@@ -28,7 +28,7 @@
             </el-row>
           </div>
           <el-tree :data="data" :props="defaultProps" icon-class="fa fa-plus" @node-click="handleNodeClick"
-                   @node-contextmenu="showContextMenu">
+                   @node-contextmenu="showCtx">
             <span class="custom-tree-node" slot-scope="{node, data}">
               <span>
                 <i v-if="data.type === 'userGroup'" class="fa fa-users" style="color:#32c5d2"></i>
@@ -57,13 +57,16 @@
           <!-- 条件查询 -->
           <el-row :gutter="20" class="tableQuery">
             <el-col :span="6">
-              <el-input size="small" v-model="personInfoTableQuery.personCode" autocomplete="off" placeholder="人员编码"></el-input>
+              <el-input size="small" v-model="personInfoTableQuery.personCode" autocomplete="off"
+                        placeholder="人员编码"></el-input>
             </el-col>
             <el-col :span="6">
-              <el-input size="small" v-model="personInfoTableQuery.fullname" autocomplete="off" placeholder="姓名"></el-input>
+              <el-input size="small" v-model="personInfoTableQuery.fullname" autocomplete="off"
+                        placeholder="姓名"></el-input>
             </el-col>
             <el-col :span="6">
-              <el-input size="small" v-model="personInfoTableQuery.username" autocomplete="off" placeholder="用户名"></el-input>
+              <el-input size="small" v-model="personInfoTableQuery.username" autocomplete="off"
+                        placeholder="用户名"></el-input>
             </el-col>
             <el-col :span="6">
               <el-button-group>
@@ -148,9 +151,10 @@
     </el-row>
 
     <!-- 右键菜单 -->
-    <context-menu id="context-menu" ref="ctxMenu">
+    <context-menu id="context-menu" ref="ctxMenu" @ctx-cancel="onCtxCancel">
       <li v-for="(item, index) in contextMenuList">
-        <el-button :disabled="item.disable" size="medium" :icon="`fa ${item.icon}`" @click="handleContextMenuClick(index)">
+        <el-button :disabled="item.disable" size="medium" :icon="`fa ${item.icon}`"
+                   @click="handleCtxClick(index)">
           {{item.text}}
         </el-button>
       </li>
@@ -211,7 +215,8 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="出生日期">
-              <el-date-picker type="date" placeholder="选择日期" v-model="personInfoForm.personBirthday" style="width: 100%;"></el-date-picker>
+              <el-date-picker type="date" placeholder="选择日期" v-model="personInfoForm.personBirthday"
+                              style="width: 100%;"></el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -259,18 +264,20 @@
       title="部门信息"
       :visible.sync="groupInfoDialog.visible"
       width="750px"
-      :open="beforePersonInfoDialogOpen">
-      <el-form :model="groupInfoForm" label-width="80px" ref="groupInfoForm">
+      :open="beforePersonInfoDialogOpen"
+      :before-close="closeGroupInfoDialog">
+      <el-form :model="groupInfoForm" label-width="80px" ref="groupInfoForm" :rules="groupInfoFormRules" status-icon>
+        <el-input v-show="false" v-model="groupInfoForm.parentGroupCode" disabled></el-input>
         <el-form-item label="上级部门">
-          <el-input v-model="targetTreeNode.text || '无'" autocomplete="off" disabled></el-input>
+          <el-input v-model="groupInfoForm.parentGroupName || '无'" autocomplete="off" disabled></el-input>
         </el-form-item>
-        <el-form-item label="部门编码">
+        <el-form-item label="部门编码" prop="groupCode">
           <el-input v-model="groupInfoForm.groupCode" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="业务类别">
           <el-input v-model="groupInfoForm.groupType" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item label="部门名称">
+        <el-form-item label="部门名称" prop="groupName">
           <el-input v-model="groupInfoForm.groupName" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="部门地址">
@@ -291,6 +298,8 @@
 
 <script>
   import contextMenu from 'vue-context-menu';
+  import * as GroupService from '../../service/group.service';
+  import { debounce } from '../../utils/utils';
 
   export default {
     name: 'TreeGrid',
@@ -427,7 +436,7 @@
         ],
         contextMenuListDisableArr: [],
         selectedRow: {},
-        targetTreeNode: {},
+        ctxTargetNode: {},
         personInfoDialog: {
           visible: false,
           action: ''
@@ -438,17 +447,53 @@
           visible: false,
           action: ''
         },
-        groupInfoForm: {}
+        groupInfoForm: {},
+        groupInfoFormRules: {
+          groupCode: [
+            { required: true, message: '请输入部门编码', trigger: 'blur' },
+            {
+              validator: debounce(async(rule, value, callback) => {
+                /* 检查是否为空 */
+                if(!value) return callback(new Error('请输入部门编码'));
+                /* 检查编码是否已经存在 */
+                const result = await GroupService.checkDuplicate({ groupCode: value });
+                console.log(result);
+                if(result.data.data.isDuplicate) {
+                  callback(new Error('部门编码已经存在'));
+                } else {
+                  /* 通过验证 */
+                  callback();
+                }
+              }, 500),
+              trigger: 'change'
+            },
+          ],
+          groupName: [
+            { required: true, message: '请输入部门名称', trigger: 'blur' },
+          ],
+        },
       };
     },
     components: {
       contextMenu
     },
+    async mounted() {
+
+    },
     methods: {
+      async loadTree(node, resolve) {
+        let groupCode = '';
+        if(node.level !== 0) {
+          console.log(node)
+        }
+        const res = await GroupService.get(groupCode);
+        console.log(res);
+        resolve(res);
+      },
       handleNodeClick(data) {
         console.log(data);
       },
-      showContextMenu(e, data, node, _this) {
+      showCtx(e, data, node, _this) {
         // 重置右键菜单的所有按钮状态
         this.changeContextMenuBtnDisable(this.contextMenuListDisableArr, false);
         // 根据节点类型禁用按钮状态
@@ -459,10 +504,17 @@
           this.contextMenuListDisableArr = [0, 1, 2, 3];
           this.changeContextMenuBtnDisable(this.contextMenuListDisableArr, true);
         }
-        this.targetTreeNode = data;
+        this.ctxTargetNode = data;
+        debugger;
+        this.groupInfoForm.parentGroupCode = data.data.groupCode;
+        this.groupInfoForm.parentGroupName = data.data.groupName;
         this.$refs.ctxMenu.open();
       },
-      handleContextMenuClick(index) {
+      onCtxCancel() {
+        this.ctxTargetNode = {};
+        this.groupInfoForm = {};
+      },
+      handleCtxClick(index) {
         switch (index) {
           case 0:
             this.showGroupInfoDialog('create');
@@ -479,12 +531,25 @@
         }
       },
       submitGroupInfoForm() {
-
+        this.$refs['groupInfoForm'].validate(async (valid) => {
+          if(valid) {
+            const rep = await GroupService.create(this.groupInfoForm);
+            if (rep.data.success) {
+              this.$message({
+                message: '创建成功',
+                type: 'success'
+              });
+              this.closeGroupInfoDialog()
+            } else {
+              this.$message.error('创建失败');
+            }
+          }
+        });
       },
       closeGroupInfoDialog() {
-        this.targetTreeNode = {};
-        this.resetForm('groupInfoForm');
         this.groupInfoDialog.visible = false;
+        this.groupInfoForm = {};
+        this.ctxTargetNode = {};
       },
       createPerson() {
         this.personInfoDialog = {
@@ -506,12 +571,9 @@
       accountManage(rowIndex, row) {
       },
       beforePersonInfoDialogOpen() {
-        if(this.personInfoDialog.action === 'edit') {
+        if (this.personInfoDialog.action === 'edit') {
 
         }
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
       },
       changeContextMenuBtnDisable(nthList, value) {
         nthList.forEach((item) => {
@@ -548,12 +610,15 @@
   .el-button--mini {
     padding: 3px 5px;
   }
+
   .el-select {
     width: 100%
   }
+
   .el-pagination {
     margin-top: 1rem;
   }
+
   .tableQuery {
     margin-bottom: 1rem;
   }
