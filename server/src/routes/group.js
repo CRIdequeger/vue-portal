@@ -5,13 +5,49 @@ import Group from '../modules/group.model';
 const router = express.Router();
 
 /* 获取list */
-const getList = (req, res) => {
-  const groupList = Group.find();
-  res.status(200).send(groupList)
+const getList = async (req, res) => {
+  const { groupCode } = req.body;
+  console.log(req.params);
+  console.log(req.body);
+  let queryPromise;
+  if(groupCode) {
+    queryPromise = Group.find({ groupCode });
+  } else {
+    queryPromise = Group.find({ groupCode: '', groupName: '' });
+  }
+  const resultList = {
+    success: true,
+    data: await queryPromise
+  };
+
+  res.status(200).send(resultList)
 };
 
-/* 根据id返回 */
-const getOneById = (req, res) => {
+/* 根据groupCode返回 */
+const getOneByGroupCode = (req, res) => {
+
+};
+
+const checkDuplicate = async (req, res) => {
+  const { groupCode } = req.body;
+  const queryResult = await Group.find({ groupCode });
+  let result;
+  if (queryResult.length !== 0) {
+    result = {
+      success: true,
+      data: {
+        isDuplicate: true
+      }
+    }
+  } else {
+    result = {
+      success: true,
+      data: {
+        isDuplicate: false
+      }
+    }
+  }
+  res.status(200).send(result);
 };
 
 /* 新增 */
@@ -23,7 +59,9 @@ const create = async (req, res) => {
     createResult = await Group.create(createGroup);
     res.status(200).send({
       success: true,
-      group: createResult
+      data: {
+        group: createResult
+      }
     })
   } catch (e) {
     res.status(500).send({
@@ -49,8 +87,10 @@ const deleteGroup = (req, res) => {
 };
 
 router.get('/', getList);
-router.get('/:id', getOneById);
+router.get('/:id', getOneByGroupCode);
 router.post('/', create);
+router.post('/checkDuplicate', checkDuplicate);
 router.put('/', update);
 router.delete('/', deleteGroup);
 
+export default router;
