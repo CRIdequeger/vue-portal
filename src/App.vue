@@ -26,7 +26,6 @@ export default {
   },
   created() {
     let token = window.localStorage.getItem('token');
-    console.log(typeof token)
     if (token == null) return;
     const user = window.localStorage.getItem('user');
     // token = JSON.parse(token);
