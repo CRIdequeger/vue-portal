@@ -5,4 +5,20 @@
   position: absolute;
   left: 1rem; }
 
+.el-upload.el-upload--text {
+  width: 100%; }
+
+.el-upload-dragger {
+  width: 100%; }
+
+.clearfix:after {
+  content: "020";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden; }
+
+.clearfix {
+  zoom: 1; }
+
 /*# sourceMappingURL=base.css.map */

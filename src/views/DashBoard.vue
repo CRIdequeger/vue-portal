@@ -2,7 +2,7 @@
   <div class="dashboard">
     <el-row>
       <el-col :span="24">
-        <smart-form :formMetaData="formMetaData"></smart-form>
+        <smart-form :formMetaData="formMetaData" @submit="submitSmartForm"></smart-form>
       </el-col>
     </el-row>
     <el-row>
@@ -41,7 +41,13 @@ export default {
       userList: [],
       formMetaData: {
         form: {
-          name: 'formTest'
+          name: 'formTest',
+          /* 120px */
+          labelWidth: '120px',
+          /* left, right, top */
+          labelPosition: 'right',
+          /* 有几列 */
+          col: 3
         },
         inputs: [
           {
@@ -201,6 +207,9 @@ export default {
           console.log(this.userList);
         });
     },
+    submitSmartForm(form) {
+      console.log(form)
+    }
   },
 };
 </script>
