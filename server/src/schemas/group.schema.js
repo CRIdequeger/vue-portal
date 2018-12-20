@@ -2,11 +2,12 @@
 import Mongoose from 'mongoose';
 
 const GroupSchema = new Mongoose.Schema({
-  groupName: String,
-  parentGroupCode: String,
+  groupAddress: String,
   groupCode: String,
+  groupDes: String,
+  groupName: String,
   groupType: String,
-  indexNumber: String
+  parentGroupCode: String
 });
 
 export default GroupSchema;
