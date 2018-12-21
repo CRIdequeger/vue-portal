@@ -478,7 +478,6 @@
       contextMenu
     },
     async mounted() {
-
     },
     methods: {
       async loadTree(node, resolve) {

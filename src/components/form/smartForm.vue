@@ -2,7 +2,7 @@
   <el-card>
     <div class="clearfix" slot="header">
       <el-row class="caption">
-        <el-col :span="12"><i class="fa fa-keyboard-o" style="padding-right: .5rem;"></i>聪明的表单
+        <el-col :span="12"><i class="fa fa-keyboard-o" style="padding-right: .5rem;"></i>{{formMetaData.form.name}}
         </el-col>
         <el-col :span="12" class="action" style="text-align: right;">
           <el-button type="primary" size="small" :icon="metaDataShow? `el-icon-minus` :`el-icon-plus`" @click="metaDataShow = !metaDataShow">{{metaDataShow? `隐藏元数据`: `显示元数据`}}
@@ -26,31 +26,32 @@
         <el-col v-for="(item, index) in row" :key="item.key" :span="Math.ceil(24 / formMetaData.form.col)">
           <!-- Input -->
           <el-form-item :prop="item.name" v-if="item.type === 'input'" :label="item.label">
-            <el-input v-model="form[item.name]" autocomplete="off"></el-input>
+            <el-input v-model="form[item.name]" autocomplete="off" :disabled="item.disabled"></el-input>
           </el-form-item>
           <!-- Radio -->
           <el-form-item :prop="item.name" v-if="item.type === 'radio'" :label="item.label">
             <el-radio-group v-model="form[item.name]">
-              <el-radio v-for="option in item.options" :key="option.value" :label="option.value">{{option.text}}
+              <el-radio v-for="option in item.options" :key="option.value" :label="option.value" :disabled="option.disabled">{{option.text}}
               </el-radio>
             </el-radio-group>
           </el-form-item>
           <!-- Checkbox -->
           <el-form-item :prop="item.name" v-if="item.type === 'checkbox'" :label="item.label">
             <el-checkbox-group v-model="form[item.name]">
-              <el-checkbox v-for="option in item.options" :key="option.value" :label="option.value" :name="item.name">
+              <el-checkbox v-for="option in item.options" :key="option.value" :label="option.value" :name="item.name" :disabled="option.disabled">
                 {{option.text}}
               </el-checkbox>
             </el-checkbox-group>
           </el-form-item>
           <!-- Select -->
           <el-form-item :prop="item.name" v-if="item.type === 'select'" :label="item.label">
-            <el-select v-model="form[item.name]" placeholder="请选择" style="width: 100%;">
+            <el-select v-model="form[item.name]" placeholder="请选择" style="width: 100%;" :disabled="item.disabled">
               <el-option
                 v-for="option in item.options"
                 :key="option.value"
                 :label="option.text"
-                :value="option.value">
+                :value="option.value"
+                :disabled="option.disabled">
               </el-option>
             </el-select>
           </el-form-item>
@@ -60,7 +61,8 @@
               v-model="form[item.name]"
               type="datetime"
               placeholder="选择日期时间"
-              style="width: 100%;">
+              style="width: 100%;"
+              :disabled="item.disabled">
             </el-date-picker>
           </el-form-item>
           <!--between Datetime-->
@@ -83,7 +85,8 @@
               class="upload-demo"
               drag
               :action="item.action"
-              multiple>
+              multiple
+              :disabled="item.disabled">
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
               <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
@@ -91,11 +94,11 @@
           </el-form-item>
           <!-- Textarea -->
           <el-form-item :prop="item.name" v-if="item.type === 'textarea'" :label="item.label">
-            <el-input type="textarea" v-model="form[item.name]" autocomplete="off"></el-input>
+            <el-input type="textarea" v-model="form[item.name]" autocomplete="off" :disabled="item.disabled"></el-input>
           </el-form-item>
           <!-- Number -->
           <el-form-item :prop="item.name" v-if="item.type === 'number'" :label="item.label">
-            <el-input-number v-model="form[item.name]" autocomplete="off" :precision="item.precision || 0" :size="item.size || 'small'" :controls="item.controls || false" style="width: 100%;"></el-input-number>
+            <el-input-number v-model="form[item.name]" autocomplete="off" :precision="item.precision || 0" :size="item.size || 'small'" :controls="item.controls || false" style="width: 100%;" :disabled="item.disabled"></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>

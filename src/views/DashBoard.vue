@@ -41,13 +41,13 @@ export default {
       userList: [],
       formMetaData: {
         form: {
-          name: 'formTest',
+          name: '聪明的表单',
           /* 120px */
           labelWidth: '120px',
           /* left, right, top */
           labelPosition: 'right',
           /* 有几列 */
-          col: 3
+          col: 2
         },
         inputs: [
           {
@@ -55,6 +55,7 @@ export default {
             label: '测试input',
             name: 'testInput',
             type: 'input',
+            disabled: true,
             validators: [
               { required: true, message: '请输入文字', trigger: 'blur' },
               { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
@@ -68,7 +69,8 @@ export default {
             options: [
               {
                 text: '测试一',
-                value: 0
+                value: 0,
+                disabled: true,
               },
               {
                 text: '测试二',
@@ -91,7 +93,8 @@ export default {
             options: [
               {
                 text: '测试一',
-                value: 0
+                value: 0,
+                disabled: true,
               },
               {
                 text: '测试二',
@@ -111,10 +114,12 @@ export default {
             label: '测试select',
             name: 'testSelect',
             type: 'select',
+            // disabled: true,
             options: [
               {
                 text: '测试一',
-                value: 0
+                value: 0,
+                disabled: true,
               },
               {
                 text: '测试二',
@@ -134,6 +139,7 @@ export default {
             label: '测试datetime',
             name: 'testDatetime',
             type: 'datetime',
+            disabled: true,
             validators: [
               { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
             ]
@@ -156,6 +162,7 @@ export default {
             key: '007',
             label: '测试upload',
             name: 'testUpload',
+            disabled: true,
             type: 'upload',
             /* 文件提交地址 */
             action: 'https://jsonplaceholder.typicode.com/posts/'
@@ -164,6 +171,7 @@ export default {
             key: '008',
             label: '测试textarea',
             name: 'testTextarea',
+            disabled: true,
             type: 'textarea',
             validators: [
               { required: true, message: '请输入描述', trigger: 'blur' }
@@ -173,6 +181,7 @@ export default {
             key: '009',
             label: '测试number',
             name: 'testNumber',
+            disabled: true,
             type: 'number',
             precision: 2,
             validators: [
