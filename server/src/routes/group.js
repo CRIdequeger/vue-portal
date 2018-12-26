@@ -6,15 +6,11 @@ const router = express.Router();
 
 /* 获取list */
 const getList = async (req, res) => {
-  const { groupCode } = req.body;
+  const { parentGroupCode } = req.body;
   console.log(req.params);
   console.log(req.body);
   let queryPromise;
-  if(groupCode) {
-    queryPromise = Group.find({ groupCode });
-  } else {
-    queryPromise = Group.find({ groupCode: '', groupName: '' });
-  }
+  queryPromise = Group.find({ parentGroupCode});
   const resultList = {
     success: true,
     data: await queryPromise
