@@ -2,12 +2,12 @@
   <div class="dashboard">
     <el-row>
       <el-col :span="24">
-        <smart-form :formMetaData="formMetaData" @submit="submitSmartForm"></smart-form>
+        <tree-grid></tree-grid>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="24">
-        <tree-grid></tree-grid>
+        <smart-form :formMetaData="formMetaData" @submit="submitSmartForm"></smart-form>
       </el-col>
     </el-row>
     <el-row>
@@ -43,7 +43,7 @@ export default {
         form: {
           name: '聪明的表单',
           /* 120px */
-          labelWidth: '120px',
+          labelWidth: '130px',
           /* left, right, top */
           labelPosition: 'right',
           /* 有几列 */
@@ -55,7 +55,6 @@ export default {
             label: '测试input',
             name: 'testInput',
             type: 'input',
-            disabled: true,
             validators: [
               { required: true, message: '请输入文字', trigger: 'blur' },
               { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
@@ -140,21 +139,24 @@ export default {
             name: 'testDatetime',
             type: 'datetime',
             disabled: true,
-            validators: [
+            /*validators: [
               { type: 'date', required: true, message: '请选择日期', trigger: 'change' }
-            ]
+            ]*/
           },
           {
             key: '006',
-            label: '测试datetime区间',
-            name: 'testBetweenDatetime',
-            type: 'betweenDatetime',
-            options: [
+            label: '测试时间范围',
+            name: 'testDatetimeRange',
+            type: 'datetimerange',
+            validators: [
               {
-                name: 'startDatetime',
+                required: true, message: '请选择时间范围', trigger: 'blur'
               },
               {
-                name: 'endDatetime',
+                validator: (rule, value, callback) => {
+                  callback()
+                },
+                trigger: 'blur'
               }
             ]
           },
@@ -173,9 +175,9 @@ export default {
             name: 'testTextarea',
             disabled: true,
             type: 'textarea',
-            validators: [
+            /*validators: [
               { required: true, message: '请输入描述', trigger: 'blur' }
-            ]
+            ]*/
           },
           {
             key: '009',

@@ -4,9 +4,14 @@
       <el-header>
         <top></top>
       </el-header>
-      <el-main>
-        <router-view/>
-      </el-main>
+      <el-container>
+        <el-aside width="235px">
+          <sidebar></sidebar>
+        </el-aside>
+        <el-main id="main-container">
+          <router-view/>
+        </el-main>
+      </el-container>
       <el-footer>
         <bottom></bottom>
       </el-footer>
@@ -17,12 +22,15 @@
 <script>
 import Top from './components/Top';
 import Bottom from './components/Bottom';
+import Sidebar from './components/Sidebar';
+
 
 export default {
   name: 'App',
   components: {
-    top: Top,
-    bottom: Bottom,
+    Top,
+    Bottom,
+    Sidebar,
   },
   created() {
     let token = window.localStorage.getItem('token');
@@ -43,8 +51,21 @@ export default {
   -moz-osx-font-smoothing: grayscale
   color: #2c3e50
   .el-header, .el-footer
-    height: 60px
+    position: fixed
+    z-index: 5
+    width: 100vw
+    height: 6vh!important
     padding-left: 30px
-    line-height: 60px
+    line-height: 6vh
     background: #409EFF
+    color: #fff
+  .el-header
+    top: 0
+  .el-footer
+    bottom: 0
+  #main-container
+    margin: 6vh 0
+    padding: 20px
+    height: 88vh
+    overflow: auto
 </style>

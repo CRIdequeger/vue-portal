@@ -1,5 +1,5 @@
 <template>
-  <div>H-PORTAL</div>
+  <div>VUE-PORTAL</div>
 </template>
 
 <script>
