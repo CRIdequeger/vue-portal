@@ -27,7 +27,7 @@
               </el-col>
             </el-row>
           </div>
-          <el-tree :data="data" :props="defaultProps" icon-class="fa fa-plus" @node-click="handleNodeClick"
+          <el-tree :props="defaultProps" :load="loadTree" lazy icon-class="fa fa-plus" @node-click="handleNodeClick"
                    @node-contextmenu="showCtx">
             <span class="custom-tree-node" slot-scope="{node, data}">
               <span>
@@ -486,8 +486,7 @@
           console.log(node)
         }
         const res = await GroupService.get(groupCode);
-        console.log(res);
-        resolve(res);
+        resolve(res.data.data);
       },
       handleNodeClick(data) {
         console.log(data);
@@ -504,7 +503,6 @@
           this.changeContextMenuBtnDisable(this.contextMenuListDisableArr, true);
         }
         this.ctxTargetNode = data;
-        debugger;
         this.groupInfoForm.parentGroupCode = data.data.groupCode;
         this.groupInfoForm.parentGroupName = data.data.groupName;
         this.$refs.ctxMenu.open();
