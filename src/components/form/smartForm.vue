@@ -5,25 +5,10 @@
         <el-row class="caption">
           <el-col :span="12"><i class="fa fa-keyboard-o" style="padding-right: .5rem;"></i>{{formMetaData.form.name}}
           </el-col>
-          <el-col :span="12" class="action" style="text-align: right;">
-            <el-button type="primary" size="small" :icon="metaDataShow? `el-icon-minus` :`el-icon-plus`" @click="metaDataShow = !metaDataShow">{{metaDataShow? `隐藏元数据`: `显示元数据`}}
-            </el-button>
-          </el-col>
         </el-row>
       </div>
       <el-form :model="form" :label-width="formMetaData.form.labelWidth || '120px'" :label-position="formMetaData.form.labelPosition || 'right'" ref="form" :rules="rules" status-icon>
-        <el-row :gutter="20">
-          <el-col v-if="metaDataShow" :span="8">
-            <h3>元数据</h3>
-          </el-col>
-          <el-col :span="metaDataShow?16:24">
-            <h3>效果</h3>
-          </el-col>
-        </el-row>
         <el-row :gutter="20" v-for="(row, rowIndex) in rows" :key="rowIndex">
-          <el-col v-if="metaDataShow" :span="8" style="border-bottom: 1px solid #000">
-            {{item}}
-          </el-col>
           <el-col v-for="(item, index) in row" :key="item.key" :span="Math.ceil(24 / formMetaData.form.col)">
             <!-- Input -->
             <el-form-item :prop="item.name" v-if="item.type === 'input'" :label="item.label">
@@ -82,13 +67,15 @@
             <el-form-item :prop="item.name" v-if="item.type === 'upload'" :label="item.label">
               <el-upload
                 class="upload-demo"
-                drag
                 :action="item.action"
+                :auto-upload="false"
+                :file-list="uploadFileList[item.name]"
+                :ref="item.name"
+                :on-change="onFileListChange"
                 multiple
-                :disabled="item.disabled">
-                <i class="el-icon-upload"></i>
-                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div>
+                list-type="picture">
+                <el-button size="small" type="primary">选取文件</el-button>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
               </el-upload>
             </el-form-item>
             <!-- Textarea -->
@@ -134,7 +121,6 @@
         rows[rowNum].push(item);
         rules[item.name] = item.validators;
       }
-      console.log(rows);
       return {
         metaDataDemo: {
           form: {
@@ -289,6 +275,7 @@
             },
           ]
         },
+        uploadFileList: {},
         pickerOptions: {
           shortcuts: [{
             text: '最近一周',
@@ -318,14 +305,18 @@
         },
         form,
         rules,
-        rows,
-        metaDataShow: false
+        rows
       };
     },
     methods: {
+      onFileListChange(file, fileList) {
+      },
       onSubmit() {
         this.$refs['form'].validate( (valid) => {
           if(valid) {
+            for(let index in this.uploadFileList) {
+              this.form[index] = this.$refs[index][0].uploadFiles
+            }
             this.$emit('submit', this.form)
           }
         });
